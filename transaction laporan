@@ -1,0 +1,47 @@
+// ✅ INI TEMPAT HEADER ACTION
+            ->headerActions([
+                Action::make('laporan_mingguan')
+                    ->label('📄 Laporan Mingguan')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('danger')
+                    ->form([
+                        \Filament\Forms\Components\DatePicker::make('start_date')
+                            ->label('Tanggal Mulai')
+                            ->required(),
+                        \Filament\Forms\Components\DatePicker::make('end_date')
+                            ->label('Tanggal Akhir')
+                            ->required(),
+                    ])
+                    ->action(function (array $data) {
+    
+                        $transactions = ProductTransaction::with('product')
+                            ->whereBetween('created_at', [
+                                Carbon::parse($data['start_date'])->startOfDay(),
+                                Carbon::parse($data['end_date'])->endOfDay(),
+                            ])
+                            ->get();
+    
+                        $totalOmzet = $transactions->sum('grand_total_amount');
+    
+                        $pdf = Pdf::loadView(
+                            'pdf.laporan-transaksi-mingguan',
+                            [
+                                'transactions' => $transactions,
+                                'data' => $data,
+                                'totalOmzet' => $totalOmzet,
+                            ]
+                        );
+    
+                        return response()->streamDownload(
+                            fn () => print($pdf->output()),
+                            'laporan-transaksi-mingguan.pdf'
+                        );
+                    }),
+            ])
+    
+            // ✅ ACTION PER BARIS
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ]);
+    }
