@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Laporan Transaksi Mingguan</title>
+    <style>
+        body { font-family: sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #000; padding: 6px; }
+        th { background: #f0f0f0; }
+        h2 { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<h2>Laporan Transaksi</h2>
+<p>
+    Periode:
+    {{ \Carbon\Carbon::parse($data['start_date'])->format('d M Y') }}
+    s/d
+    {{ \Carbon\Carbon::parse($data['end_date'])->format('d M Y') }}
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Kode Transaksi</th>
+            <th>Pembeli</th>
+            <th>Produk</th>
+            <th>Qty</th>
+            <th>Total</th>
+            <th>Tanggal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($transactions as $trx)
+        <tr>
+            <td>{{ $loop->iteration }}</td>
+            <td>{{ $trx->booking_trx_id }}</td>
+            <td>{{ $trx->name }}</td>
+            <td>{{ $trx->product->name ?? '-' }}</td>
+            <td>{{ $trx->quantity }}</td>
+            <td>
+                Rp {{ number_format($trx->grand_total_amount, 0, ',', '.') }}
+            </td>
+            <td>{{ $trx->created_at->format('d-m-Y') }}</td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+
+<br>
+
+<p><strong>Total Transaksi:</strong> {{ $transactions->count() }}</p>
+<p><strong>Total Omzet:</strong>
+    Rp {{ number_format($totalOmzet, 0, ',', '.') }}
+</p>
+
+</body>
+</html>
