@@ -33,6 +33,7 @@ php artisan make:view pdf/laporan-transaksi-mingguan
             <th>Produk</th>
             <th>Qty</th>
             <th>Total</th>
+            <th>status</th>
             <th>Tanggal</th>
         </tr>
     </thead>
@@ -47,6 +48,11 @@ php artisan make:view pdf/laporan-transaksi-mingguan
             <td>
                 Rp {{ number_format($trx->grand_total_amount, 0, ',', '.') }}
             </td>
+
+            <td>
+            {{ $trx->is_paid ? 'Paid' : 'Unpaid' }}
+            </td>
+
             <td>{{ $trx->created_at->format('d-m-Y') }}</td>
         </tr>
         @endforeach
