@@ -63,7 +63,10 @@ php artisan make:view pdf/laporan-transaksi-mingguan
 
 <p><strong>Total Transaksi:</strong> {{ $transactions->count() }}</p>
 <p><strong>Total Omzet:</strong>
-    Rp {{ number_format($totalOmzet, 0, ',', '.') }}
+    Rp {{ number_format(
+        $transactions->where('is_paid', true)->sum('grand_total_amount'),
+        0, ',', '.'
+    ) }}
 </p>
 
 </body>
